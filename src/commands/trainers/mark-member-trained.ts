@@ -9,6 +9,7 @@ import {isEquipmentTrainer} from '../is-equipment-trainer';
 const codec = t.strict({
   equipmentId: tt.UUID,
   memberNumber: t.union([t.Int, tt.IntFromString]),
+  trainedAt: tt.DateFromISOString,
 });
 
 export type MarkMemberTrained = t.TypeOf<typeof codec>;
@@ -27,6 +28,7 @@ const process = (input: {
       memberNumber: input.command.memberNumber,
       legacyImport: false,
       actor: input.command.actor,
+      trainedAt: input.command.trainedAt,
     })
   );
 

@@ -1,7 +1,7 @@
 import {pipe} from 'fp-ts/lib/function';
 import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
-import {html, safe, sanitizeString, toLoggedInContent} from '../../types/html';
+import {html, Safe, safe, sanitizeString, toLoggedInContent} from '../../types/html';
 import {Form} from '../../types/form';
 import {getEquipmentIdFromForm} from '../equipment/get-equipment-id-from-form';
 import {memberInput} from '../../templates/member-input';
@@ -9,6 +9,8 @@ import {Member} from '../../read-models/members';
 import {Equipment} from '../../read-models/shared-state/return-types';
 import {failureWithStatus} from '../../types/failure-with-status';
 import {StatusCodes} from 'http-status-codes';
+import {dateTimeInput} from '../../templates/date-time-input';
+import {DateTime} from 'luxon';
 
 type ViewModel = {
   equipment: Equipment;
@@ -31,6 +33,19 @@ const renderForm = (viewModel: ViewModel) =>
           value="${viewModel.equipment.id}"
         />
         ${memberInput(viewModel.members)}
+        ${dateTimeInput(
+          'trainedAt' as Safe,
+          'When was the training?' as Safe,
+          DateTime.now(),
+          O.some({
+            value: DateTime.now().minus({months: 1}),
+            tooltip: 'Training date cannot be more than 1 month ago, ask admin if needed' as Safe,
+        }),
+          O.some({
+            value: DateTime.now().plus({minutes: 5}),
+            tooltip: 'Training time cannot be in the future' as Safe,
+          })
+        )}
         <button type="submit">Confirm</button>
       </form>
     `,

@@ -124,6 +124,7 @@ export const updateState =
             .limit(1)
             .get()
         );
+        const trainedAt = event.trainedAt ?? event.recordedAt;
         // A bug was previously found here because the trainedAt value from the database
         // truncates the milliseconds in the date. This leads to 2 completely duplicate events
         // appearing different because the times are different (by < 1000 milliseconds). To prevent
@@ -132,7 +133,7 @@ export const updateState =
         // the information to resolve is lost by the db milliseconds truncation anyway.
         if (
           O.isSome(existing) &&
-          existing.value.trainedAt.getTime() - 1000 < event.recordedAt.getTime()
+          existing.value.trainedAt.getTime() - 1000 < trainedAt.getTime()
         ) {
           // If we have already marked this member as trained in the past then
           // don't re-mark them as this would refresh their 'trained since'.
@@ -141,7 +142,7 @@ export const updateState =
         if (O.isSome(existing)) {
           db.update(trainedMemberstable)
             .set({
-              trainedAt: event.recordedAt,
+              trainedAt: trainedAt,
               trainedByMemberNumber: event.trainedByMemberNumber,
               legacyImport: event.legacyImport,
               markTrainedByActor: event.actor,
@@ -158,7 +159,7 @@ export const updateState =
             .values({
               memberNumber: event.memberNumber,
               equipmentId: event.equipmentId,
-              trainedAt: event.recordedAt,
+              trainedAt: trainedAt,
               trainedByMemberNumber: event.trainedByMemberNumber,
               legacyImport: event.legacyImport,
               markTrainedByActor: event.actor,

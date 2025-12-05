@@ -141,6 +141,7 @@ const MemberTrainedOnEquipment = defineEvent('MemberTrainedOnEquipment', {
   memberNumber: t.number,
   trainedByMemberNumber: t.union([t.number, t.null]), // Null to indicate system.
   legacyImport: tt.withFallback(t.boolean, false),
+  trainedAt: tt.withFallback(t.union([tt.DateFromISOString, t.undefined]), undefined),
 });
 
 // User impersonation version of MemberTrainedOnEquipment
